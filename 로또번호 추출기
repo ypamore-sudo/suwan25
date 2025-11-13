@@ -1,0 +1,304 @@
+
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>로또 번호 추출기</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1 class="title">🎯 로또 번호 추출기</h1>
+  <div class="container">
+    <div class="machine">
+      <div class="drum">
+        <div class="spinner"></div>
+        <div class="hole"></div>
+      </div>
+      <div class="ball-row" id="ballRow"></div>
+      <button onclick="startDraw()">추첨 시작</button>
+    </div>
+    <div class="fireworks" id="fireworks"></div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
+body {
+  background: linear-gradient(to bottom, #a0d8f1, #e0f7ff);
+  font-family: 'Arial', sans-serif;
+  text-align: center;
+  padding-top: 30px;
+}
+
+.title {
+  font-size: 36px;
+  color: #0044cc;
+  text-shadow: 0 0 10px #fff;
+  margin-bottom: 20px;
+}
+
+.container {
+  max-width: 700px;
+  margin: auto;
+}
+
+.machine {
+  margin-top: 20px;
+}
+
+.drum {
+  width: 220px;
+  height: 220px;
+  margin: auto;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  border: 4px solid #aaa;
+  position: relative;
+  box-shadow: inset 0 0 30px #88c;
+  animation: rotateDrum 4s linear infinite;
+  overflow: hidden;
+}
+
+@keyframes rotateDrum {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spinner {
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(circle at 20% 30%, #e74c3c 10%, transparent 11%),
+    radial-gradient(circle at 70% 40%, #3498db 10%, transparent 11%),
+    radial-gradient(circle at 50% 70%, #2ecc71 10%, transparent 11%),
+    radial-gradient(circle at 30% 80%, #f39c12 10%, transparent 11%),
+    radial-gradient(circle at 80% 60%, #9b59b6 10%, transparent 11%);
+  background-size: 30px 30px;
+  background-repeat: repeat;
+  animation: spinBalls 2s linear infinite;
+}
+
+@keyframes spinBalls {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.hole {
+  width: 60px;
+  height: 60px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: inset 0 0 10px #999;
+  z-index: 2;
+}
+
+.ball-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 60px;
+  flex-wrap: wrap;
+}
+
+.ball {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px #fff;
+  animation: popBall 1s ease-out;
+}
+
+.bonus {
+  border: 3px solid #000;
+  background: #222 !important;
+  color: #FFD700 !important;
+}
+
+@keyframes popBall {
+  0% { transform: translateY(100px) scale(0.3); opacity: 0; }
+  50% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 18px;
+  background: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.fireworks {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: none;
+}
+.ball-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 60px;
+  flex-wrap: wrap;
+}
+
+.ball {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px #fff;
+  animation: popBall 1s ease-out;
+}
+
+.bonus {
+  background: #222 !important;
+  color: #FFD700 !important;
+  border: 3px solid #FFD700;
+  position: relative;
+}
+
+.bonus::after {
+  content: "보너스";
+  position: absolute;
+  top: -22px;
+  font-size: 14px;
+  color: #FFD700;
+  font-weight: bold;
+}
+
+.separator {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+}
+function startDraw() {
+  const ballRow = document.getElementById('ballRow');
+  const fireworks = document.getElementById('fireworks');
+  ballRow.innerHTML = '';
+  fireworks.style.display = 'none';
+
+  const colors = ['#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#f39c12', '#1abc9c'];
+  const numbers = new Set();
+  while (numbers.size < 7) {
+    numbers.add(Math.floor(Math.random() * 45) + 1);
+  }
+
+  const sorted = Array.from(numbers).sort((a, b) => a - b);
+
+  sorted.forEach((num, index) => {
+    setTimeout(() => {
+      const ball = document.createElement('div');
+      ball.className = 'ball';
+      ball.textContent = num;
+
+      const color = colors[index % colors.length];
+      ball.style.backgroundColor = color;
+
+      if (index === 6) {
+        ball.classList.add('bonus');
+      }
+
+      ballRow.appendChild(ball);
+
+      if (index === 6) {
+        setTimeout(() => {
+          fireworks.style.display = 'block';
+          launchFireworks();
+        }, 1000);
+      }
+    }, index * 1200);
+  });
+}
+
+function launchFireworks() {
+  const canvas = document.createElement('canvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  document.getElementById('fireworks').appendChild(canvas);
+
+  const ctx = canvas.getContext('2d');
+  for (let i = 0; i < 100; i++) {
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height;
+    const r = Math.random() * 5 + 2;
+    const color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+  }
+
+  setTimeout(() => {
+    document.getElementById('fireworks').innerHTML = '';
+    document.getElementById('fireworks').style.display = 'none';
+  }, 2000);
+}
+function startDraw() {
+  const ballRow = document.getElementById('ballRow');
+  const fireworks = document.getElementById('fireworks');
+  ballRow.innerHTML = '';
+  fireworks.style.display = 'none';
+
+  const colors = ['#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#f39c12', '#1abc9c'];
+  const numbers = new Set();
+  while (numbers.size < 7) {
+    numbers.add(Math.floor(Math.random() * 45) + 1);
+  }
+
+  const sorted = Array.from(numbers).sort((a, b) => a - b);
+  const mainNumbers = sorted.slice(0, 6);
+  const bonusNumber = sorted[6];
+
+  mainNumbers.forEach((num, index) => {
+    setTimeout(() => {
+      const ball = document.createElement('div');
+      ball.className = 'ball';
+      ball.textContent = num;
+      ball.style.backgroundColor = colors[index % colors.length];
+      ballRow.appendChild(ball);
+
+      if (index === 5) {
+        // + 기호 추가
+        const plus = document.createElement('div');
+        plus.className = 'separator';
+        plus.textContent = '+';
+        ballRow.appendChild(plus);
+      }
+    }, index * 1000);
+  });
+
+  // 보너스 번호
+  setTimeout(() => {
+    const bonusBall = document.createElement('div');
+    bonusBall.className = 'ball bonus';
+    bonusBall.textContent = bonusNumber;
+    ballRow.appendChild(bonusBall);
+
+    setTimeout(() => {
+      fireworks.style.display = 'block';
+      launchFireworks();
+    }, 1000);
+  }, mainNumbers.length * 1000);
+}
